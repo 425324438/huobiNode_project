@@ -24,5 +24,8 @@
   "main": "app.js",
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "ejs": "^2.5.7"
+  }
 }
