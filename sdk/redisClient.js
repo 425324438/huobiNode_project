@@ -1,6 +1,6 @@
 const redis = require('redis');
 
-let client = redis.createClient(6379,'120.55.48.46',{});
+let client = redis.createClient(6379,'---',{});
 
 client.on("connect",(err)=>{
     console.log('连接Redis成功！');
