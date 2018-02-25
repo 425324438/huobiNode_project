@@ -9,7 +9,7 @@ var config = {
 
 
 let Job = async function()  {
-    let client = redis.createClient(6379,'120.55.48.46',{});
+    let client = redis.createClient(6379,'---',{});
     const clientGet = promisify(client.get).bind(client);
     const clientSet = promisify(client.set).bind(client);
     const clientLlen = promisify(client.llen).bind(client);
