@@ -21,7 +21,7 @@ app.set('view engine', 'html');
 
 setInterval(() => {
   currJob();
-}, 15 * 1000);
+}, 10 * 1000);
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
