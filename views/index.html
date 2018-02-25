@@ -233,6 +233,10 @@
 </div>
 </body>
 <script>
+    window.onload = ()=>{
+        getCurrency();
+        getUser();
+    }
     function showWxImg() {
         var wx = $('#img_wx')[0];
         console.log(wx.style.display);
@@ -254,6 +258,64 @@
         }else{
             zfb.style.display = 'none';
         }
+    }
+
+    var currencyList = '';
+    function getCurrency() {
+        $.ajax({
+            type: "get",
+            url: "/currenc/getCurrenc",
+            success: function(msg){
+                var html='';
+                currencyList = msg;
+                html += '<span >'+msg+'</span>，';
+                html += '<button class="btn btn-primary" onclick="showConfig()">修改/添加</button>';
+                $('#currency').html(html);
+            }
+        });
+    }
+
+    function updateCurrency() {
+        var str = $('#config_Currency').val();
+        $.ajax({
+            type: "post",
+            url: "/currenc/updateCurrency",
+            data :{
+                "currency" : str
+            },
+            success: function(msg){
+                $('#configCurrency').modal('hide');
+                getCurrency();
+            }
+        });
+    }
+
+    function showConfig() {
+        $('#config_Currency').val(currencyList);
+        $('#configCurrency').modal('show');
+    }
+
+    function getUser() {
+        $.ajax({
+            type: "get",
+            url: "/users/get",
+            success: function(msg){
+                $('#user').empty();
+                var html='';
+                for (var i=0;i < msg.length; i++){
+                    var json = JSON.parse(msg[i]);
+                    html += '<li class="list-group-item" >';
+                    html += '用户：<span id="del_user">'+json.user+'</span><br>';
+                    html += '关注的货币：<span id="del_currency">'+json.currency+'</span><br>';
+                    html += '是否接收邮件：<span id="email">'+json.email+'</span><br>';
+                    html += '接收邮件：开始时间<span id="del_start">'+json.start+'</span>~';
+                    html += '结束时间：<span id="del_end">'+json.end+'</span><br>';
+                    html += '<button class="btn" onclick="testEmail(this)">发送测试邮件</button>';
+                    html += '</li>';
+                }
+                $('#user').html(html);
+            }
+        });
     }
 
     function addUser() {

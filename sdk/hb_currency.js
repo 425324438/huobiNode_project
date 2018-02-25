@@ -66,6 +66,7 @@ function get_body(symbol,access_key) {
         symbol : symbol,
         period : '1min',
         AccessKeyId: access_key,
+        size : 10,
         SignatureMethod: "HmacSHA256",
         SignatureVersion: 2,
         Timestamp: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
