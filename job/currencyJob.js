@@ -27,7 +27,7 @@ let Job = async function()  {
         //获取之前记录价格
         let symbol = await clientGet(this_cur);
         symbol = JSON.parse(symbol);
-        // console.log(`当前货币对：${this_cur},当前价格是：${amount[0].close},上次记录价格：${symbol[this_cur]},上次记录时间是：${symbol.dataTime}`);
+        
 
         let msg = '';
         if(amount[0].close > symbol[this_cur]){
@@ -37,25 +37,77 @@ let Job = async function()  {
         }
         //波动百分比
         let rose =(amount[0].close - symbol[this_cur]) / amount[0].close * 100;
+        rose = rose.toFixed(2);
+        console.log(`当前货币对：${this_cur},价格：${amount[0].close},波动(${msg}${rose}%),上次记录价格：${symbol[this_cur]},上次记录时间是：${symbol.dataTime}`);
         if(rose >= 2.0 || rose <= -2.0 ){
             let str = `${this_cur}：5min内波动(${msg}${rose}%),当前价格：${amount[0].close},之前价格：${symbol[this_cur]}`;
             let length =  await clientLlen('userEmail');
             let userList =  await clientLrange('userEmail',0 ,length);
-            userList.forEach(user => {
+            for(let i =0; i < userList.length; i++){
+                let user = userList[i];
                 user = JSON.parse(user);
+                console.log(user.currency);
                 if(user.currency.indexOf(this_cur) != -1){
-                    console.log(`包含此货币对${this_cur}`);
+                    // sendMail(user.user,str,str);
+                    console.log(`发送邮件...${this_cur}: 发送给 ${user.user}`);
+                    sendMail(user.user,str,str);
                 }
-            });
-            // sendMail('2037520355@qq.com',str,str);
-            //修改redis记录的价格
+            }
+            let cur_str = `{"${this_cur}":"${amount[0].close}","dataTime":"${new Date().Format('yyyy-MM-dd hh:mm:ss')}"}`;
+            clientSet(this_cur,cur_str);
         }
-        
-    }
 
-    // sendMail('2037520355@qq.com','NodeJs测试','数字货币价格监控测试');
+        let date = new Date();
+        let beforeDate = new Date().convertDateFromString(symbol.dataTime);
+        if(date.getTime() - beforeDate.getTime() > 300000){
+            if(this_cur == 'btcusdt'){
+                let cur_str = `{"${this_cur}":"${amount[0].close}","dataTime":"${new Date().Format('yyyy-MM-dd hh:mm:ss')}"}`;
+                clientSet(this_cur,cur_str);
+            }
+        }
+    }
 }
 
-Job();
+Date.prototype.convertDateFromString = function convertDateFromString(dateString) {
+    if (dateString) { 
+        var date = new Date(dateString.replace(/-/,"/")) 
+        return date;
+    }
+}
+
+// yyyy-MM-dd hh:mm:ss
+Date.prototype.Format=function(fmt) {         
+    var o = {         
+    "M+" : this.getMonth()+1, //月份         
+    "d+" : this.getDate(), //日         
+    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时         
+    "H+" : this.getHours(), //小时         
+    "m+" : this.getMinutes(), //分         
+    "s+" : this.getSeconds(), //秒         
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度         
+    "S" : this.getMilliseconds() //毫秒         
+    };         
+    var week = {         
+    "0" : "/u65e5",         
+    "1" : "/u4e00",         
+    "2" : "/u4e8c",         
+    "3" : "/u4e09",         
+    "4" : "/u56db",         
+    "5" : "/u4e94",         
+    "6" : "/u516d"        
+    };         
+    if(/(y+)/.test(fmt)){         
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));         
+    }         
+    if(/(E+)/.test(fmt)){         
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "/u661f/u671f" : "/u5468") : "")+week[this.getDay()+""]);         
+    }         
+    for(var k in o){         
+        if(new RegExp("("+ k +")").test(fmt)){         
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));         
+        }         
+    }         
+    return fmt;         
+}
 
 module.exports = Job;
