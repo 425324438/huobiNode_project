@@ -1,8 +1,13 @@
 # huobiNode_project
 重构火币网数字货币监控系统
-
-## 下载
-`git clone git@github.com:425324438/huobiNode_project.git`
+### 说明：
+__
+nodeJs 版本：v9.6.1
+__
+### 下载
+```git clone git@github.com:425324438/huobiNode_project.git```
+### 初始化
+```npm i ```
 
 1. 修改redis配置文件：**huobiNode_project/bin/config.js**
 ```
