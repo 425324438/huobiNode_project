@@ -1,7 +1,10 @@
 const redis = require('redis');
 const {promisify} = require('util');
+
 const hb_currency = require('../sdk/hb_currency');
 const sendMail = require('../email/mail');
+const RedisConfig = require('../bin/config');
+
 var config = {
     access_key : '0e44466a-072c6d96-121dc8f5-bd52d',
     secretkey : '079f54ea-165848f7-aefbc94c-70cea'
@@ -9,7 +12,7 @@ var config = {
 
 
 let Job = async function()  {
-    let client = redis.createClient(6379,'---',{});
+    let client = redis.createClient(RedisConfig.port,RedisConfig.host,{});
     const clientGet = promisify(client.get).bind(client);
     const clientSet = promisify(client.set).bind(client);
     const clientLlen = promisify(client.llen).bind(client);
