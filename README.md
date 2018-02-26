@@ -1,9 +1,9 @@
 # huobiNode_project
 重构火币网数字货币监控系统
 ### 说明：
-__
-nodeJs 版本：v9.6.1
-__
+__nodeJs 版本：v9.6.1__
+__npm 版本：5.6.0__
+__pm2 版本： 2.9.1__
 ### 下载
 ```git clone git@github.com:425324438/huobiNode_project.git```
 ### 初始化
