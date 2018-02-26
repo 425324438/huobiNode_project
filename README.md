@@ -1,8 +1,8 @@
 # huobiNode_project
 重构火币网数字货币监控系统
 ### 说明：
-__nodeJs 版本：v9.6.1__
-__npm 版本：5.6.0__
+__nodeJs 版本：v9.6.1__，
+__npm 版本：5.6.0__，
 __pm2 版本： 2.9.1__
 ### 下载
 ```git clone git@github.com:425324438/huobiNode_project.git```
@@ -17,7 +17,7 @@ module.exports = {
 }
 ```
 2. 需安装pm2 管理项目
-否则：自行修改**package.json**
+否则：请自行修改**package.json**
 ```
  "scripts": {
     "start": "pm2 start ./bin/www --name huobiNode_project"
