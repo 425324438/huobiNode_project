@@ -16,7 +16,7 @@ module.exports = {
     port : 6379
 }
 ```
-2. 需安装pm2 管理项目
+2. 需安装**pm2** 管理项目
 否则：请自行修改**package.json**
 ```
  "scripts": {
