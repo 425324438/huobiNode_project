@@ -10,7 +10,7 @@ let  mainTest  = async (account) =>  {
     // let str = '{"btcusdt":"9445.63","dataTime":"2018-02-25 09:48:55"}';
 
     // console.log(JSON.parse(str));
-    
+    fs.writeFile('test.txt','123123');
 
 }
 
