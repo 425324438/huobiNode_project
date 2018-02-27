@@ -1,7 +1,10 @@
 const redis = require('redis');
 const {promisify} = require('util');
+
 const hb_currency = require('../sdk/hb_currency');
 const sendMail = require('../email/mail');
+const RedisConfig = require('../bin/config');
+
 var config = {
     access_key : '0e44466a-072c6d96-121dc8f5-bd52d',
     secretkey : '079f54ea-165848f7-aefbc94c-70cea'
@@ -9,14 +12,12 @@ var config = {
 
 
 let Job = async function()  {
-    let client = redis.createClient(6379,'120.55.48.46',{});
+    let client = redis.createClient(RedisConfig.port,RedisConfig.host,{});
     const clientGet = promisify(client.get).bind(client);
     const clientSet = promisify(client.set).bind(client);
     const clientLlen = promisify(client.llen).bind(client);
     const clientLrange = promisify(client.lrange).bind(client);
     
-    
-     
     let rsu = await clientGet('currencyList');
     let curr = rsu.split(',');
     for(let i =0;i < curr.length ;i++){
@@ -46,24 +47,27 @@ let Job = async function()  {
             for(let i =0; i < userList.length; i++){
                 let user = userList[i];
                 user = JSON.parse(user);
-                console.log(user.currency);
                 if(user.currency.indexOf(this_cur) != -1){
-                    // sendMail(user.user,str,str);
                     console.log(`发送邮件...${this_cur}: 发送给 ${user.user}`);
                     sendMail(user.user,str,str);
                 }
             }
             let cur_str = `{"${this_cur}":"${amount[0].close}","dataTime":"${new Date().Format('yyyy-MM-dd hh:mm:ss')}"}`;
-            clientSet(this_cur,cur_str);
+            let isup = await clientSet(this_cur,cur_str);
+            console.log(`修改：${cur_str}`);
+            console.log(`修改结果：${isup}`);
         }
 
+        symbol = await clientGet(this_cur);
+        symbol = JSON.parse(symbol);
         let date = new Date();
         let beforeDate = new Date().convertDateFromString(symbol.dataTime);
-        if(date.getTime() - beforeDate.getTime() > 300000){
-            if(this_cur == 'btcusdt'){
-                let cur_str = `{"${this_cur}":"${amount[0].close}","dataTime":"${new Date().Format('yyyy-MM-dd hh:mm:ss')}"}`;
-                clientSet(this_cur,cur_str);
-            }
+
+        let differ = ((date.getTime() - beforeDate.getTime()) / 1000 /60).toFixed(2);
+        if(differ > 5){
+            let cur_str = `{"${this_cur}":"${amount[0].close}","dataTime":"${new Date().Format('yyyy-MM-dd hh:mm:ss')}"}`;
+            let isup = await clientSet(this_cur,cur_str);
+            console.log(`5min修改结果：${isup}`);
         }
     }
 }
@@ -80,7 +84,7 @@ Date.prototype.Format=function(fmt) {
     var o = {         
     "M+" : this.getMonth()+1, //月份         
     "d+" : this.getDate(), //日         
-    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时         
+    "h+" : this.getHours(), //小时         
     "H+" : this.getHours(), //小时         
     "m+" : this.getMinutes(), //分         
     "s+" : this.getSeconds(), //秒         

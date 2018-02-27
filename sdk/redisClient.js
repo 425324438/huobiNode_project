@@ -1,6 +1,8 @@
 const redis = require('redis');
+const config = require('../bin/config');
 
-let client = redis.createClient(6379,'120.55.48.46',{});
+
+let client = redis.createClient(config.port,config.host,{});
 
 client.on("connect",(err)=>{
     console.log('连接Redis成功！');
