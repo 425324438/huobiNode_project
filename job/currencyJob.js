@@ -1,5 +1,6 @@
 const redis = require('redis');
 const {promisify} = require('util');
+const fs = require('fs');
 
 const hb_currency = require('../sdk/hb_currency');
 const sendMail = require('../email/mail');
@@ -17,6 +18,10 @@ let Job = async function()  {
     const clientSet = promisify(client.set).bind(client);
     const clientLlen = promisify(client.llen).bind(client);
     const clientLrange = promisify(client.lrange).bind(client);
+    
+    let readFile = promisify(fs.readFile).bind(fs);
+    let writeFile = promisify(fs.writeFile).bind(fs);
+    let fileExists = promisify(fs.exists).bind(fs);
     
     let rsu = await clientGet('currencyList');
     let curr = rsu.split(',');
