@@ -14,10 +14,11 @@ let  mainTest  = async (account) =>  {
     // fs.writeFile('test.txt','123123');
     let writeFile = promisify(fs.writeFile).bind(fs);
     let readFile = promisify(fs.readFile).bind(fs);
+    let fileExists = promisify(fs.exists).bind(fs);
 
     let fileName = "currencyList";
     // let data = await writeFile(__dirname+'/'+fileName,"eosusdt,xrpusdt,ethusdt,btcusdt,htusdt,sntbtc,ltcusdt");
-    let data = await readFile(__dirname+'/'+fileName);
+    let data = await fileExists(__dirname+'/'+fileName);
     console.log(data.toString());
 
 }

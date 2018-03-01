@@ -22,7 +22,13 @@ let Job = async function()  {
     let readFile = promisify(fs.readFile).bind(fs);
     let writeFile = promisify(fs.writeFile).bind(fs);
     let fileExists = promisify(fs.exists).bind(fs);
+
+    let resourceURL = `${__dirname}/resource`;
     
+    let exists = fileExists(resourceURL+'/currencyList');
+    if(exists == false){
+        let data = await writeFile(resourceURL+'/currencyList',"eosusdt,xrpusdt,ethusdt,btcusdt,htusdt,sntbtc,ltcusdt");
+    }
     let rsu = await clientGet('currencyList');
     let curr = rsu.split(',');
     for(let i =0;i < curr.length ;i++){
