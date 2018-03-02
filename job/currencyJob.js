@@ -4,42 +4,42 @@ const fs = require('fs');
 
 const hb_currency = require('../sdk/hb_currency');
 const sendMail = require('../email/mail');
-const RedisConfig = require('../bin/config');
 
 var config = {
     access_key : '0e44466a-072c6d96-121dc8f5-bd52d',
     secretkey : '079f54ea-165848f7-aefbc94c-70cea'
 }
 
-
 let Job = async function()  {
-    let client = redis.createClient(RedisConfig.port,RedisConfig.host,{});
-    const clientGet = promisify(client.get).bind(client);
-    const clientSet = promisify(client.set).bind(client);
-    const clientLlen = promisify(client.llen).bind(client);
-    const clientLrange = promisify(client.lrange).bind(client);
     
     let readFile = promisify(fs.readFile).bind(fs);
     let writeFile = promisify(fs.writeFile).bind(fs);
     let fileExists = promisify(fs.exists).bind(fs);
 
+    //资源文件路径
     let resourceURL = `${__dirname}/resource`;
     
-    let exists = fileExists(resourceURL+'/currencyList');
+    let exists = await fileExists(resourceURL+'/currencyList');
     if(exists == false){
         let data = await writeFile(resourceURL+'/currencyList',"eosusdt,xrpusdt,ethusdt,btcusdt,htusdt,sntbtc,ltcusdt");
+        return false;
     }
-    let rsu = await clientGet('currencyList');
-    let curr = rsu.split(',');
+    let rsu = await readFile(resourceURL+'/currencyList');
+    let curr = rsu.toString().split(',');
     for(let i =0;i < curr.length ;i++){
         let this_cur = curr[i]; //当前货币对
         //获取当前货币对价格
         let amount = await hb_currency.get_currency(this_cur,config);
         // console.log(amount[0].close);
         //获取之前记录价格
-        let symbol = await clientGet(this_cur);
-        symbol = JSON.parse(symbol);
-        
+        let exists = await fileExists(resourceURL+'/'+this_cur);
+        if(exists == false){
+            let cur_str = `{"${this_cur}":"${amount[0].close}","dataTime":"${new Date().Format('yyyy-MM-dd hh:mm:ss')}"}`;
+            let data = await writeFile(resourceURL+'/'+this_cur,cur_str);
+            return false;
+        }
+        let symbol = await readFile(resourceURL+'/'+this_cur);
+        symbol = JSON.parse(symbol.toString());
 
         let msg = '';
         if(amount[0].close > symbol[this_cur]){
@@ -53,32 +53,33 @@ let Job = async function()  {
         console.log(`当前货币对：${this_cur},价格：${amount[0].close},波动(${msg}${rose}%),上次记录价格：${symbol[this_cur]},上次记录时间是：${symbol.dataTime}`);
         if(rose >= 2.0 || rose <= -2.0 ){
             let str = `${this_cur}：5min内波动(${msg}${rose}%),当前价格：${amount[0].close},之前价格：${symbol[this_cur]}`;
-            let length =  await clientLlen('userEmail');
-            let userList =  await clientLrange('userEmail',0 ,length);
+            console.log(`发邮件之前`);
+            let userList = await readFile(resourceURL+'/userEmail');
+            userList = JSON.parse(userList.toString());
             for(let i =0; i < userList.length; i++){
                 let user = userList[i];
-                user = JSON.parse(user);
                 if(user.currency.indexOf(this_cur) != -1){
                     console.log(`发送邮件...${this_cur}: 发送给 ${user.user}`);
                     sendMail(user.user,str,str);
                 }
             }
             let cur_str = `{"${this_cur}":"${amount[0].close}","dataTime":"${new Date().Format('yyyy-MM-dd hh:mm:ss')}"}`;
-            let isup = await clientSet(this_cur,cur_str);
+            let isup = await writeFile(resourceURL+'/'+this_cur,cur_str);
             console.log(`修改：${cur_str}`);
             console.log(`修改结果：${isup}`);
         }
 
-        symbol = await clientGet(this_cur);
-        symbol = JSON.parse(symbol);
+        symbol = await readFile(resourceURL+'/'+this_cur);
+        symbol = JSON.parse(symbol.toString());
+
         let date = new Date();
         let beforeDate = new Date().convertDateFromString(symbol.dataTime);
 
         let differ = ((date.getTime() - beforeDate.getTime()) / 1000 /60).toFixed(2);
         if(differ > 5){
             let cur_str = `{"${this_cur}":"${amount[0].close}","dataTime":"${new Date().Format('yyyy-MM-dd hh:mm:ss')}"}`;
-            let isup = await clientSet(this_cur,cur_str);
-            console.log(`5min修改结果：${isup}`);
+            let isup = await writeFile(resourceURL+'/'+this_cur,cur_str);
+            console.log(`5min修改：${this_cur}`);
         }
     }
 }
@@ -126,3 +127,5 @@ Date.prototype.Format=function(fmt) {
 }
 
 module.exports = Job;
+
+Job();
