@@ -1,5 +1,4 @@
 var express = require('express');
-// let client = require('../sdk/redisClient');
 var router = express.Router();
 
 /* GET home page. */

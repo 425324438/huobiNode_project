@@ -1,6 +1,9 @@
 // const hbsdk = require('./sdk/hbsdk');
 // const sendMail = require('./email/mail');
 const fs = require('fs');
+const { URL } = require('url');
+const os = require('os');
+const { sep } = require('path')
 const {promisify} = require('util');
 // let client = require('../sdk/redisClient');
 
@@ -16,10 +19,13 @@ let  mainTest  = async (account) =>  {
     let readFile = promisify(fs.readFile).bind(fs);
     let fileExists = promisify(fs.exists).bind(fs);
 
-    let fileName = "currencyList";
-    // let data = await writeFile(__dirname+'/'+fileName,"eosusdt,xrpusdt,ethusdt,btcusdt,htusdt,sntbtc,ltcusdt");
-    let data = await fileExists(__dirname+'/'+fileName);
-    console.log(data.toString());
+    fs.readFile(`../job/resource/userEmail`,(err,data)=>{
+      if(err){
+        console.log(err);
+      }else{
+        console.log(data.toString());
+      }
+    });
 
 }
 

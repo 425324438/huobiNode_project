@@ -128,4 +128,4 @@ Date.prototype.Format=function(fmt) {
 
 module.exports = Job;
 
-Job();
+// Job();

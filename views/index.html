@@ -303,7 +303,7 @@
                 $('#user').empty();
                 var html='';
                 for (var i=0;i < msg.length; i++){
-                    var json = JSON.parse(msg[i]);
+                    var json = msg[i];
                     html += '<li class="list-group-item" >';
                     html += '用户：<span id="del_user">'+json.user+'</span><br>';
                     html += '关注的货币：<span id="del_currency">'+json.currency+'</span><br>';
