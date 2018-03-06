@@ -9,14 +9,8 @@ __pm2 版本： 2.9.1__
 ### 初始化
 ```npm i ```
 
-1. 修改redis配置文件：**huobiNode_project/bin/config.js**
-```
-module.exports = {
-    host : 'localhost',
-    port : 6379
-}
-```
-2. 需安装**pm2** 管理项目
+
+1. 需安装**pm2** 管理项目
 否则：请自行修改**package.json**
 ```
  "scripts": {
