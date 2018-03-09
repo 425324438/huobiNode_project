@@ -18,28 +18,24 @@ router.get('/get',(req, res, next)=>{
 });
 
 router.get('/add',  (req, res, next)=>{
-  /**
-   { user: '123',
-   currency: '123',
-    email: '123',
-    user_start: '123',
-    user_end: '123' 
-   }
-   */ 
-  console.log(`后台接收到的参数：${req.query.user}`);
+
+  console.log(`后台接收到的参数：${req.query}`);
   fs.readFile( resource_url + `/userEmail`,(err,data)=>{
     if(err){
       console.log(err);
+      res.send(err);
+      res.end();
     }else{
       data = JSON.parse(data.toString());
       data.push(req.query);
       console.log(`${data}：添加成功`);
       fs.writeFile(resource_url + `/userEmail` ,JSON.stringify(data) ,(err,result)=>{
         console.log(`${result} :写入完成`);
+        res.send('OK');
+        res.end();
       });
     }
   });
-  // console.log(`后台接收到的参数：${req.body}`);
 
 });
 
