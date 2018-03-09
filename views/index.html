@@ -326,18 +326,18 @@
         var user_end = $('#user_end').val();
 
         $.ajax({
-            type: "post",
+            type: "get",
             url: "/users/add",
             data :{
                 'user':user_user,
                 'currency':user_currency,
                 'email':user_email,
-                'user_start':user_start,
-                'user_end':user_end
+                'start':user_start,
+                'end':user_end
             },
             success: function(msg) {
                 $('#userDetail').modal('hide');
-                // getUser();
+                getUser();
             }
         });
     }

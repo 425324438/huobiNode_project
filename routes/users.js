@@ -17,7 +17,7 @@ router.get('/get',(req, res, next)=>{
   });
 });
 
-router.post('/add',(req, res, next)=>{
+router.get('/add',  (req, res, next)=>{
   /**
    { user: '123',
    currency: '123',
@@ -25,8 +25,22 @@ router.post('/add',(req, res, next)=>{
     user_start: '123',
     user_end: '123' 
    }
-   */  
-  console.log(req.body);
+   */ 
+  console.log(`后台接收到的参数：${req.query.user}`);
+  fs.readFile( resource_url + `/userEmail`,(err,data)=>{
+    if(err){
+      console.log(err);
+    }else{
+      data = JSON.parse(data.toString());
+      data.push(req.query);
+      console.log(`${data}：添加成功`);
+      fs.writeFile(resource_url + `/userEmail` ,JSON.stringify(data) ,(err,result)=>{
+        console.log(`${result} :写入完成`);
+      });
+    }
+  });
+  // console.log(`后台接收到的参数：${req.body}`);
+
 });
 
 module.exports = router;
