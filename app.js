@@ -19,9 +19,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('html', ejs.__express);
 app.set('view engine', 'html');
 
-// setInterval(() => {
-//   currJob();
-// }, 4 * 1000);
+ setInterval(() => {
+   currJob();
+ }, 4 * 1000);
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
