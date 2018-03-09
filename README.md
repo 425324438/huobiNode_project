@@ -12,7 +12,7 @@ __pm2 版本： 2.9.1__
 1.  项目根目录下的 /job/resource/userEmail **清空此文件**
    
 2. 需安装**pm2** 管理项目
-否则：请自行修改**package.json** 这里是修改启动命令的，具体怎么修改[百度](https://www.baidu.com/)。
+否则：请自行修改**package.json** 这里是修改启动命令的，具体怎么修改[百度](https://www.baidu.com/ )。
 ```
  "scripts": {
     "start": "pm2 start ./bin/www --name huobiNode_project"
